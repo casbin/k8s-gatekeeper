@@ -15,9 +15,10 @@
 package handler
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 
+	"github.com/casbin/k8s-gatekeeper/internal/model"
 	"github.com/gin-gonic/gin"
 	admission "k8s.io/api/admission/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -43,18 +44,41 @@ func Handler(c *gin.Context) {
 
 	decoder.Decode(data, nil, &admissionReview)
 
-	//for development only. 
+	//modification on our casbin model or policy should always be allowed
+	if admissionReview.Request.Resource.Resource == "casbinmodels" || admissionReview.Request.Resource.Resource == "casbinpolicies" {
+		approveResponse(c, string(admissionReview.Request.UID))
+		return
+	}
+
+	//for development only.
 	//Todo:remove this block of code
 	if admissionReview.Request.Namespace != "default" {
 		approveResponse(c, string(admissionReview.Request.UID))
 		return
 	}
-	//fmt.Println(string(data))
-	//fmt.Printf("%s\n", admissionReview.Request.Resource.String())
+
 	//currently we are going to handle these resources:
 	uid := admissionReview.Request.UID
+	resource := admissionReview.Request.Resource.Resource
 
-	fmt.Println("approved")
+	switch resource {
+	case "deployments":
+		model.MountDeploymentObject(&admissionReview)
+	case "pods":
+		model.MountPodObject(&admissionReview)
+	case "services":
+		model.MountServiceObject(&admissionReview)
+	case "ingresses":
+		model.MountIngressObject(&admissionReview)
+	}
+	err := model.EnforcerList.Enforce(&admissionReview)
+	if err != nil {
+		log.Printf("%s  rejected\n", admissionReview.Request.Resource.String())
+		rejectResponse(c, string(uid), err.Error())
+		return
+	}
+
+	log.Printf("%s  approved\n", admissionReview.Request.Resource.String())
 	approveResponse(c, string(uid))
 
 }
