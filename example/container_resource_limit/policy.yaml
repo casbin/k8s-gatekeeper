@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: container-resource-limit
+spec:
+  policyItem: |
+    p, 104857600, 104857600, deny

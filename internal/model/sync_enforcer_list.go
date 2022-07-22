@@ -96,8 +96,15 @@ func (s *SyncEnforcerList) loadEnforcer() {
 			log.Printf("error: %s", err.Error())
 			return
 		}
-		//todo: setup function list
 		e.AddFunction("access", casbinhelper.Access)
+		e.AddFunction("accessWithWildcard", casbinhelper.AccessWithWildCard)
+		e.AddFunction("string", casbinhelper.ToString)
+		e.AddFunction("parseFloat", casbinhelper.ParseFloat)
+		e.AddFunction("contain", casbinhelper.Contain)
+		e.AddFunction("split", casbinhelper.Split)
+		e.AddFunction("len", casbinhelper.Len)
+		e.AddFunction("matchRegex", casbinhelper.MatchRegex)
+		e.AddFunction("isNil", casbinhelper.IsNil)
 		s.Enforcers = append(s.Enforcers, &EnforcerWrapper{Enforcer: e, ModelName: tmp.Name})
 	}
 	log.Printf("%d enforcers loaded", len(s.Enforcers))

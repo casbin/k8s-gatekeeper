@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: block-nodeport-services
+spec:
+  policyItem: |
+    p,NodePort,deny
