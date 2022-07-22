@@ -7,6 +7,7 @@ import (
 	"time"
 
 	casbin "github.com/casbin/casbin/v2"
+	"github.com/casbin/k8s-gatekeeper/pkg/casbinhelper"
 	admission "k8s.io/api/admission/v1"
 )
 
@@ -23,7 +24,7 @@ type SyncEnforcerList struct {
 
 var EnforcerList *SyncEnforcerList
 
-func init() {
+func Init() {
 	EnforcerList = NewSyncEnforcerList()
 }
 
@@ -82,6 +83,7 @@ func (s *SyncEnforcerList) loadEnforcer() {
 			return
 		}
 		//todo: setup function list
+		e.AddFunction("access", casbinhelper.Access)
 		s.Enforcers = append(s.Enforcers, &EnforcerWrapper{Enforcer: e, ModelName: tmp.Name})
 	}
 	log.Printf("%d enforcers loaded", len(s.Enforcers))

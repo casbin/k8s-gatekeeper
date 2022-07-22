@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: casbin-webhook-svc
+  labels:
+    app: casbin-webhook-svc
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+  selector:
+    app: casbin-webhook
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casbin-webhook
+  labels:
+    app: casbin-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: casbin-webhook
+  template:
+    metadata:
+      labels:
+        app: casbin-webhook
+    spec:
+      serviceAccountName: my-sa
+      containers:
+      - name: casbin-kubesphere-authz
+        image: k8s-gatekeeper:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080

@@ -15,10 +15,14 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/unrolled/secure"
 
 	"github.com/casbin/k8s-gatekeeper/internal/handler"
+	"github.com/casbin/k8s-gatekeeper/internal/model"
 )
 
 func tlsHandler(c *gin.Context) {
@@ -35,6 +39,13 @@ func tlsHandler(c *gin.Context) {
 }
 
 func main() {
+	name := flag.Bool("externalClient", true, "is running inside the k8s cluster")
+	flag.Parse()
+	model.IsExternalClient = *name
+	fmt.Println(model.IsExternalClient)
+
+	model.Init()
+
 	r := gin.Default()
 	r.Any("/", handler.Handler)
 	r.Use(tlsHandler)

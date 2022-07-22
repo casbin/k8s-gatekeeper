@@ -1,0 +1,11 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: allowed-repo
+spec:
+  policyItem: |
+    p, "nginx:1.13.1",allow
+    p, "nginx:1.14.1",deny
+  
+
+  
