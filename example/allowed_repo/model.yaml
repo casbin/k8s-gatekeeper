@@ -1,0 +1,19 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: allowed-repo
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  obj,eft
+
+    [policy_effect]
+    e = !some(where (p.eft == deny))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
+    access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Image") == p.obj
