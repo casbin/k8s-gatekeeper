@@ -19,9 +19,9 @@ jobs:
     - name: Build
       run: go build -v cmd/webhook/main.go
     - name: pretest
-      run: cd test/pretest &&  ./env_setup.sh
+      run: cd e2e/pretest &&  ./env_setup.sh
     - name: Test
-      run: go test -v ./...
+      run: go test -v ./... -tags e2e
 
   e2e-test:
     runs-on: ubuntu-latest
@@ -32,8 +32,8 @@ jobs:
       with:
         go-version: 1.18
     - name: modify host
-      run: cd test/pretest && sudo ./modify_host.sh
+      run: cd e2e/pretest && sudo ./modify_host.sh
     - name: pretest
-      run: cd test/pretest &&  ./env_setup.sh
+      run: cd e2e/pretest &&  ./env_setup.sh
     - name: run e2e test
-      run: cd test && ./test.sh
+      run: cd e2e && ./test.sh

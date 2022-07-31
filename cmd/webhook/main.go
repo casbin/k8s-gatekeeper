@@ -16,7 +16,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/unrolled/secure"
@@ -28,7 +27,6 @@ import (
 func tlsHandler(c *gin.Context) {
 	secureMiddleware := secure.New(secure.Options{
 		SSLRedirect: true,
-		SSLHost:     "localhost:8080",
 	})
 	err := secureMiddleware.Process(c.Writer, c.Request)
 	// If there was an error, do not continue.
@@ -42,7 +40,6 @@ func main() {
 	name := flag.Bool("externalClient", true, "is running inside the k8s cluster")
 	flag.Parse()
 	model.IsExternalClient = *name
-	fmt.Println(model.IsExternalClient)
 
 	model.Init()
 
