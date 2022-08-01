@@ -1,0 +1,20 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: required-probes
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  type,eft
+
+    [policy_effect]
+    e = !some(where (p.eft == deny))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments"&& \
+    r.obj.Request.Operation != "DELETE" && \
+    isNil(access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers,0,p.type))

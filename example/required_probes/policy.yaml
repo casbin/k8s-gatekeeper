@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: required-probes
+spec:
+  policyItem: |
+    p, "LivenessProbe", deny
