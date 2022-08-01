@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: required-labels
+spec:
+  policyItem: |
+    p, "owner", "test-158", deny

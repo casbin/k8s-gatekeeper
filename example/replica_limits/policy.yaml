@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: replica-limits
+spec:
+  policyItem: |
+    p, 3,deny
