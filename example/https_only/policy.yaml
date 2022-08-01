@@ -1,0 +1,6 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: https-only
+spec:
+  policyItem: ""

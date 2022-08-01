@@ -1,0 +1,20 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: container-resource-limit
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  cpu,memory,eft
+
+    [policy_effect]
+    e = !some(where (p.eft == deny))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
+    parseFloat(access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Resources","Limits","cpu","Value")) >= parseFloat(p.cpu) && \
+    parseFloat(access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Resources","Limits","memory","Value")) >= parseFloat(p.memory)

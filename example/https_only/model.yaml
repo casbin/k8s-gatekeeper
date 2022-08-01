@@ -1,0 +1,21 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: https-only
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  obj,eft
+
+    [policy_effect]
+    e = some(where (p.eft == allow))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="ingresses" && \
+    access(r.obj.Request.Object.Object , "Annotations", "kubernetes.io/ingress.allow-http") == "false" &&\
+    parseFloat(len(r.obj.Request.Object.Object.Spec.TLS)) > 0 || \
+    r.obj.Request.Resource.Resource !="ingresses"

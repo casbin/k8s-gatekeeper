@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: external-ip
+spec:
+  policyItem: |
+    p, 1.1.1.1,deny
