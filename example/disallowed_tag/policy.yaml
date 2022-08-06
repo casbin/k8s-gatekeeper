@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: disallowed-tag
+spec:
+  policyItem: |
+    p, "1.14.1",deny

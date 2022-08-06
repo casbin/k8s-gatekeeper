@@ -1,0 +1,20 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: block-nodeport-services
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  obj,eft
+
+    [policy_effect]
+    e = !some(where (p.eft == deny))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="services" && \
+    r.obj.Request.Operation != "DELETE" &&\
+    string(r.obj.Request.Object.Object.Spec.Type)  == p.obj
