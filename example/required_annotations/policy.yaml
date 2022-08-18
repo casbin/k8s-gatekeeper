@@ -1,0 +1,7 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinPolicy
+metadata:
+  name: required-annotations
+spec:
+  policyItem: |
+    p, "a8r.io/owner", "test-115", deny

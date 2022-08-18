@@ -1,0 +1,20 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: required-annotations
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  key,value,eft
+
+    [policy_effect]
+    e = !some(where (p.eft == deny))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
+    access(r.obj.Request.Object.Object,"ObjectMeta","Annotations",p.key)!= p.value|| \
+    r.obj.Request.Resource.Resource !="deployments"

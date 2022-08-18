@@ -1,0 +1,20 @@
+apiVersion: "auth.casbin.org/v1"
+kind: CasbinModel
+metadata:
+  name: image-digest
+spec:
+  enabled: true
+  modelText: |
+    [request_definition]
+    r =  obj
+
+    [policy_definition]
+    p =  obj,eft
+
+    [policy_effect]
+    e = some(where (p.eft == allow))
+
+    [matchers]
+    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
+    matchRegex(accessWithWildcard(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , "*", "Image") , p.obj) || \
+    r.obj.Request.Resource.Resource !="deployments"
