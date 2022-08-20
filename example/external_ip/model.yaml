@@ -15,5 +15,5 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="services" && \
-    contain(accessWithWildcard(r.obj.Request.Object.Object.Spec.ExternalIPs , "*") , p.obj)
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="services" && \
+    contain(accessWithWildcard(${OBJECT}.Spec.ExternalIPs , "*") , p.obj)

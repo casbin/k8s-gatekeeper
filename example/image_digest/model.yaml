@@ -15,6 +15,6 @@ spec:
     e = some(where (p.eft == allow))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    matchRegex(accessWithWildcard(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , "*", "Image") , p.obj) || \
-    r.obj.Request.Resource.Resource !="deployments"
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    matchRegex(accessWithWildcard(${OBJECT}.Spec.Template.Spec.Containers , "*", "Image") , p.obj) || \
+    ${RESOURCE} !="deployments"

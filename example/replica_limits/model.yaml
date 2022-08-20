@@ -15,5 +15,5 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    parseFloat(access(r.obj.Request.Object.Object.Spec.Replicas)) <= parseFloat(p.obj)
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    parseFloat(access(${OBJECT}.Spec.Replicas)) <= parseFloat(p.obj)

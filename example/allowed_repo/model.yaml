@@ -15,5 +15,5 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Image") == p.obj
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    access(${OBJECT}.Spec.Template.Spec.Containers , 0, "Image") == p.obj

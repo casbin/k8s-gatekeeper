@@ -15,7 +15,7 @@ spec:
     e = some(where (p.eft == allow))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="ingresses" && \
-    access(r.obj.Request.Object.Object , "Annotations", "kubernetes.io/ingress.allow-http") == "false" &&\
-    parseFloat(len(r.obj.Request.Object.Object.Spec.TLS)) > 0 || \
-    r.obj.Request.Resource.Resource !="ingresses"
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="ingresses" && \
+    access(${OBJECT} , "Annotations", "kubernetes.io/ingress.allow-http") == "false" &&\
+    parseFloat(len(${OBJECT}.Spec.TLS)) > 0 || \
+    ${RESOURCE} !="ingresses"
