@@ -74,19 +74,10 @@ Three methods are provided for installing K8s-gatekeeper: External webhook, Inte
 
 *Note: these methods are only for user to try K8s-gatekeeper, and it is not secure. If you want to use it in productive environment, please make sure you read Chapter 5. Advanced setting and make modifications accordingly when necessary before installation  *
 
-### 2.1 Install K8s-gatekeeper via helm
+### 2.1 Internal webhook
+#### 2.1.1 Step 1: Build image
+Internal webhook means the webhook itself will be implmented as a service inside k8s. Creating a service as well as deployment requires a image of K8s-gatekeeper. You can should build your own image.
 
-*Will be worked out soon*
-
-### 2.2 Internal webhook
-#### 2.2.1 Step 1: Build image
-
-Internal webhook means the webhook itself will be implmented as a service inside k8s. Creating a service as well as deployment requires a image of K8s-gatekeeper. You can choose to build your own image, or use the pre-built image we provide.
-
-##### 2.2.1.1 Using Prebuild image
-*Will be worked out soon*
-
-##### 2.2.1.2 Build K8s-gatekeeper image 
 Run 
 ```shell
 docker build --target webhook -t k8s-gatekeeper .
@@ -95,7 +86,8 @@ Then there will be a local image called 'k8s-gatekeeper:latest'.
 
 *Note: if you are using minikube, please execute `eval $(minikube -p minikube docker-env)` before running docker build*
 
-#### 2.2.2 Step 2: Set up services and deployments for K8s-gatekeeper
+
+#### 2.1.2 Step 2: Set up services and deployments for K8s-gatekeeper
 Run following commands
 ```shell
 kubectl apply -f config/rbac.yaml
@@ -104,14 +96,14 @@ kubectl apply -f config/webhook_internal.yaml
 ```
 Soon K8s-gatekeeper should be running, and you can use `kubectl get pods` to confirm that.
 
-#### 2.2.3 Step3: Install Crd Resources for K8s-gatekeeper
+#### 2.1.3 Step3: Install Crd Resources for K8s-gatekeeper
 Run following commands
 ```shell
 kubectl apply -f config/auth.casbin.org_casbinmodels.yaml 
 kubectl apply -f config/auth.casbin.org_casbinpolicies.yaml
 ```
 
-### 2.3 External webhook
+### 2.2 External webhook
 External webhook means K8s-gatekeeper will be running outside the K8s, and K8s will visit K8s-gatekeeper like visiting a ordinary website. K8s has mandatory requirement that admission webhook must be  HTTPS. For the sake of user's experience in trying  K8s-gatekeeper, we have provided you a set of certificate as well as private key (though it is not secure). If you prefer to use your own certificate, please refer to Chapter 5. Advanced setting to make adjustments to the certificate and private key.
 
 The certificate we provide is issued for 'webhook.domain.local', so please modify the host (like /etc/hosts), point webhook.domain.local to the ip address on which K8s-gatekeeper is running.
@@ -125,6 +117,15 @@ kubectl apply -f config/auth.casbin.org_casbinmodels.yaml
 kubectl apply -f config/auth.casbin.org_casbinpolicies.yaml
 kubectl apply -f config/webhook_external.yaml 
 ```
+
+### 2.3 Install K8s-gatekeeper via helm
+
+#### 2.3.1 Step 1: Build image
+See Chapter 2.1.1
+#### 2.3.2 helm install
+Run
+`helm install k8sgatekeeper ./k8sgatekeeper `
+
 ## 3. Try K8s-gatekeeper
 
 ### 3.1 Create Casbin Model and Policy
@@ -253,8 +254,74 @@ Assume `accessWithWildcard(r.obj.Request.Object.Object.Spec.Template.Spec.Contai
 - IsNil(): return whether the parameter is nil
 
 ## 5. Advanced Settings
-To be continued
+
+### 5.1 About Certificates
+
+In k8s, it is mandatory that a webhook should use HTTPS. There are two approaches to achieve that:
+- Use self-signed certificates(examples in this repo use this method )
+- Use a normal certificate
+
+#### 5.1.1 Self-signed certificates
+Using a self-signed certificate means that the CA issuing the certificate is not one of the well-known CAs, therefore you must let k8s know this CA. 
+
+Current the example in this repo uses a self-made CA, whose private key and certificate is stored in `config/certificate/ca.crt` and `config/certificate/ca.key`. Certificate for the webhook is `config/certificate/server.crt`, issued by the self-made CA. The domains of this certificate is "webhook.domain.local"(for external webhook) and "casbin-webhook-svc.default.svc"(for internal webhook)
+
+Information about CA is passed to k8s via webhook configuration files. Both `config/webhook_external.yaml` and `config/webhook_internal.yaml` have a field called "CABundle", whose content is base64 encoded string of the  certificate of the CA.
+
+In case that you need to change the certificate/domain (for example, maybe you want to put this webhook into another namespace of k8s while using internal webhook; or maybe you want to change a domain while using external webhook), the following procedures should be taken:
+
+1. Generate a new CA
+ 
+Generate the private key for the fake CA
+```
+openssl genrsa -des3 -out ca.key 2048
+```
+
+Remove the password protection of the private key.
+``` 
+openssl rsa -in ca.key -out ca.key
+```
+
+2. Generate a private key for webhook server
+
+```
+openssl genrsa -des3 -out server.key 2048
+openssl rsa -in server.key  -out server.key 
+```
+3. Use the self-generate CA to sign the certificate for webhook
 
 
+Copy your system's openssl config file for temporary use. You can use `openssl version -a` to find out the location of the config file.
+
+Find the \[req\] paragraph and add the following line: `req_extensions = v3_req`
+
+Find the \[v3_req\] paragraph and add the following line: `subjectAltName = @alt_names`
+
+Append following lines to the file:
+```
+[alt_names]
+DNS.2=<The domain you want>
+```
+The 'casbin-webhook-svc.default.svc' should be replaced with the real service name of your own service (if you decide to modify the service name)
+
+Use the modified config file to generate a certificate request file
+
+```
+openssl req -new -nodes -keyout server.key -out server.csr -config openssl.cnf 
+```
+
+Use the self-made CA to respond the request and sign the certificate
+```
+openssl x509 -req -days 3650 -in server.csr -out server.crt -CA ca.crt  -CAkey ca.key -CAcreateserial -extensions v3_req -extensions SAN  -extfile openssl.cnf 
+```
+
+3. Replace the 'CABundle' field
+
+Both `config/webhook_external.yaml` and `config/webhook_internal.yaml` have a field called "CABundle", whose content is base64 encoded string of the  certificate of the CA.
 
 
+4. If you are using helm, similar changes need to be applied to helm charts.
+
+#### 5.1.2 Legal certificates
+
+If you uses legal certificates, you just don't need all these procedures. Remove "CABundle" field in `config/webhook_external.yaml` and `config/webhook_internal.yaml`, and change the domain in these files to the domain you own.
