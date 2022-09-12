@@ -37,3 +37,23 @@ jobs:
       run: cd e2e/pretest &&  ./env_setup.sh
     - name: run e2e test
       run: cd e2e && ./test.sh
+  
+  release-and-push:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.repository == 'casbin/k8s-gatekeeper' && github.event_name == 'push'
+    needs: [ unit-test, e2e-test ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 12
+      - name: Release
+        run: yarn global add semantic-release@17.4.4 && semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+
