@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: casbin-webhook
+  labels:
+    app: casbin-webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: casbin-webhook
+  template:
+    metadata:
+      labels:
+        app: casbin-webhook
+    spec:
+      serviceAccountName: k8sgatekeeper-sa
+      containers:
+        - name: casbin-gatekeeper
+          image: k8s-gatekeeper:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080

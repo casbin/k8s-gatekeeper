@@ -27,9 +27,9 @@ spec:
       labels:
         app: casbin-webhook
     spec:
-      serviceAccountName: my-sa
+      serviceAccountName: k8sgatekeeper-sa
       containers:
-      - name: casbin-kubesphere-authz
+      - name: casbin-gatekeeper
         image: k8s-gatekeeper:latest
         imagePullPolicy: Never
         ports:
