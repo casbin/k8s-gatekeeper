@@ -15,6 +15,6 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    access(r.obj.Request.Object.Object,"ObjectMeta","Annotations",p.key)!= p.value|| \
-    r.obj.Request.Resource.Resource !="deployments"
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    access(${OBJECT},"ObjectMeta","Annotations",p.key)!= p.value|| \
+    ${RESOURCE} !="deployments"

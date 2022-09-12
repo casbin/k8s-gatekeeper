@@ -15,6 +15,6 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    parseFloat(access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Resources","Limits","cpu","Value")) >= parseFloat(p.cpu) && \
-    parseFloat(access(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , 0, "Resources","Limits","memory","Value")) >= parseFloat(p.memory)
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    parseFloat(access(${OBJECT}.Spec.Template.Spec.Containers , 0, "Resources","Limits","cpu","Value")) >= parseFloat(p.cpu) && \
+    parseFloat(access(${OBJECT}.Spec.Template.Spec.Containers , 0, "Resources","Limits","memory","Value")) >= parseFloat(p.memory)

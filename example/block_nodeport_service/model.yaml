@@ -15,6 +15,6 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="services" && \
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="services" && \
     r.obj.Request.Operation != "DELETE" &&\
-    string(r.obj.Request.Object.Object.Spec.Type)  == p.obj
+    string(${OBJECT}.Spec.Type)  == p.obj

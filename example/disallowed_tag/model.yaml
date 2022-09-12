@@ -15,5 +15,5 @@ spec:
     e = !some(where (p.eft == deny))
 
     [matchers]
-    m = r.obj.Request.Namespace == "default" && r.obj.Request.Resource.Resource =="deployments" && \
-    contain(split(accessWithWildcard(r.obj.Request.Object.Object.Spec.Template.Spec.Containers , "*", "Image"),":",1) , p.obj)
+    m = ${NAMESPACE} == "default" && ${RESOURCE} =="deployments" && \
+    contain(split(accessWithWildcard(${OBJECT}.Spec.Template.Spec.Containers , "*", "Image"),":",1) , p.obj)

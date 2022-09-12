@@ -16,6 +16,7 @@ package model
 import (
 	"context"
 	"path/filepath"
+	"strings"
 
 	"github.com/casbin/casbin/v2/model"
 	"github.com/casbin/casbin/v2/persist"
@@ -60,7 +61,8 @@ func (m *ModelLoader) GetModelAndAdaptors() ([]ModelAdaptorPair, error) {
 	}
 	res := make([]ModelAdaptorPair, 0)
 	for _, crdModel := range list.Items {
-		casbinModel, err := model.NewModelFromString(crdModel.Spec.ModelText)
+		modelText := ModelMacroSubstitution(crdModel.Spec.ModelText)
+		casbinModel, err := model.NewModelFromString(modelText)
 		if err != nil {
 			return nil, err
 		}
@@ -103,4 +105,12 @@ func (m *ModelLoader) establishExternalClient() error {
 	}
 	m.clientset = clientset
 	return nil
+}
+
+func ModelMacroSubstitution(originalModelText string) string {
+	res := strings.ReplaceAll(originalModelText, "${OBJECT}", "r.obj.Request.Object.Object")
+	res = strings.ReplaceAll(res, "${NAMESPACE}", "r.obj.Request.Namespace")
+	res = strings.ReplaceAll(res, "${RESOURCE}", "r.obj.Request.Resource.Resource")
+
+	return res
 }
