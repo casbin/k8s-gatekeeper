@@ -37,3 +37,17 @@ jobs:
       run: cd e2e/pretest &&  ./env_setup.sh
     - name: run e2e test
       run: cd e2e && ./test.sh
+
+  semantic-release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run semantic-release
+        if: github.repository == 'casbin/k8s-gatekeeper' && github.event_name == 'push'
+        run: |
+          npm install --save-dev semantic-release@17.2.4
+          npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
