@@ -21,7 +21,16 @@ jobs:
     - name: pretest
       run: cd e2e/pretest &&  ./env_setup.sh
     - name: Test
-      run: go test -v ./... -tags e2e
+      run: go test -v -coverprofile=profile.cov ./... -tags e2e
+    - name: Install goveralls
+      env:
+        GO111MODULE: off
+      run: go get github.com/mattn/goveralls
+
+    - name: Send coverage
+      env:
+       COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: goveralls -coverprofile=profile.cov -service=github
 
   e2e-test:
     runs-on: ubuntu-latest

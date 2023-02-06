@@ -1,5 +1,10 @@
 # K8s-gatekeeper
-[TOC]
+[![Go](https://github.com/casbin/k8s-gatekeeper/actions/workflows/ci.yml/badge.svg)](https://github.com/casbin/k8s-gatekeeper/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/casbin/k8s-gatekeeper/badge.svg?branch=master)](https://coveralls.io/github/casbin/k8s-gatekeeper?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/casbin/k8s-gatekeeper)](https://goreportcard.com/report/github.com/casbin/k8s-gatekeeper)
+[![Godoc](https://godoc.org/github.com/casbin/k8s-gatekeeper?status.svg)](https://godoc.org/github.com/casbin/k8s-gatekeeper)
+---
+
 ## 1.Overview
 ### 1.1 What is K8s-gatekeeper
 K8s-gatekeeper is an admission webhook for k8s, using [Casbin](https://casbin.org/docs/en/overview) to apply arbitrary user-defined access control rules to help prevent any operation on k8s which administrator doesn't want.
