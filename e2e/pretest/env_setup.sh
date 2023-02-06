@@ -32,7 +32,7 @@ fi
 echo "[E2E PreTest] start minikube environment"
 minikube delete
 #minikube start
-minikube start --image-mirror-country='cn'
+minikube start
 
 
 
