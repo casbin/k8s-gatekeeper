@@ -7,9 +7,9 @@
 
 ## 1.Overview
 ### 1.1 What is K8s-gatekeeper
-K8s-gatekeeper is an admission webhook for k8s, using [Casbin](https://casbin.org/docs/en/overview) to apply arbitrary user-defined access control rules to help prevent any operation on k8s which administrator doesn't want.
+K8s-gatekeeper is an admission webhook for k8s, using [Casbin](https://casbin.org/docs/overview) to apply arbitrary user-defined access control rules to help prevent any operation on k8s which administrator doesn't want.
 
-Casbin is a powerful and efficient open-source access control library. It provides support for enforcing authorization based on various access control models. For more detail about Casbin, see <https://casbin.org/docs/en/overview>.
+Casbin is a powerful and efficient open-source access control library. It provides support for enforcing authorization based on various access control models. For more detail about Casbin, see <https://casbin.org/docs/overview>.
 
 Admission webhooks in K8s are HTTP callbacks that receive 'admission requests' and do something with them. In particular, K8s-gatekeeper is a special type of admission webhoook: 'ValidatingAdmissionWebhook', which can decide whether to accept or reject this admission request or not. As for admission requests, they are HTTP requests describing an operation on specified resources of K8s (for example, creating/deleting a deployment). For more about admission webhooks, see K8s official doc <https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#what-are-admission-webhooks>
 
@@ -43,7 +43,7 @@ spec:
 
 This request will go through the process of all the middleware shown in the picture, including our K8s-gatekeeper. K8s-gatekeeper can detected all the Casbin enforcers stored in K8s's etcd, which is created and maintained by user(via kubectl or go-client we provide). Each enforcer contains a Casbin model and a Casbin policy. The admission request will be processed by every enforcer, one by one, and only by passing all enforcers can a request be accepted by this K8s-gatekeeper.
 
-(If you do not understand what is Casbin enforcer, model or policy, see this document <https://casbin.org/docs/en/get-started>)
+(If you do not understand what is Casbin enforcer, model or policy, see this document <https://casbin.org/docs/get-started>)
 
 For example, for some reason, the administrator want to forbid the apperance of image 'nginx:1.14.1' while allowing  'nginx:1.3.1', an enforcer containing the following rule and policy can be created: (We will explain how to create an enforcer, what these models and policies and how to write them in following chapters.)
 
@@ -184,7 +184,7 @@ kubectl apply -f example/allowed_repo/testcase/reject_1.yaml
 you are supposed to find that k8s will reject this request, and mentioning that this webhook was the reason why this request is rejected. However, when you tries to apply example/allowed_repo/testcase/approve_2.yaml, it will be accepted.
 
 ## 4. How to write Model and Policy K8s-gatekeeper
-First of all, you are supposed to know the basic grammar of Casbin Models and Policies. If you haven't acknowledged it, please read <https://casbin.org/docs/en/get-started> first. In this chapter we will assume that you have known what are Casbin Models and Policies.
+First of all, you are supposed to know the basic grammar of Casbin Models and Policies. If you haven't acknowledged it, please read <https://casbin.org/docs/get-started> first. In this chapter we will assume that you have known what are Casbin Models and Policies.
 
 ### 4.1 Request Definition of Model
 When K8s-gatekeeper is authorizing a request, the input is always one object: the go object of the Admission Request. Which means the enforcer will always be used like this
@@ -204,7 +204,7 @@ Name 'obj' is not mandatory, as long as the name is consistent with the name use
 ### 4.2 Matchers of Model
 You are supposed to use the ABAC feature of Casbin to write down your rule. However, the expression evaluator integrated in Casbin supports neither indexing in masp or arrays(slices), nor the expansion of array. Therefore K8s-gatekeeper provide various 'Casbin functions' as extension to impelement these features. If you still find that your demand cannot be fulfilled by these extensions, it is welcomed to start a issue, or pr directly.
 
-If you don't know what is casbin funtion, see <https://casbin.org/docs/en/function> for more information.
+If you don't know what is casbin funtion, see <https://casbin.org/docs/function> for more information.
 
 Here are the extension functions
 ### 4.2.1 Externsion functions
